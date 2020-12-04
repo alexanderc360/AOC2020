@@ -7,11 +7,13 @@ public class AdventOfCode {
     private static final File one = new File("dayOne.txt");
     private static final File two = new File("dayTwo.txt");
     private static final File three = new File("dayThree.txt");
+    private static final File four = new File("dayFour.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
 //        System.out.println(dayTwo());
         System.out.println(dayThree());
+//        System.out.println(dayFour());
     }
 
 
@@ -77,8 +79,8 @@ public class AdventOfCode {
         return validCount;
     }
 
-    public static int dayThree() throws IOException {
-        int countOne = 0, countThree = 0, countFive = 0, countSeven = 0, countSkip = 0, lineCount = 0;
+    public static long dayThree() throws IOException {
+        long countOne = 0, countThree = 0, countFive = 0, countSeven = 0, countSkip = 0, lineCount = 0;
         String buff;
         BufferedReader reader = new BufferedReader(new FileReader(three));
 
@@ -127,7 +129,7 @@ public class AdventOfCode {
             if (buff.charAt(currentX) == '#') {
                 countSeven++;
             }
-            System.out.println(currentX);
+
             currentX += 7;
             if (currentX >= buff.length())
                 currentX = currentX % buff.length();
@@ -150,12 +152,12 @@ public class AdventOfCode {
         }
 
         reader.close();
-//        System.out.println(countOne);
-//        System.out.println(countThree);
-//        System.out.println(countFive);
-//        System.out.println(countSeven);
-//        System.out.println(countSkip);
         return countOne * countThree * countFive * countSeven * countSkip;
+    }
+
+    public static int dayFour() {
+
+        return 0;
     }
 
     public static String[] separate(String line) {
