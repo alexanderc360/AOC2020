@@ -1,5 +1,4 @@
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
 
@@ -7,10 +6,12 @@ public class AdventOfCode {
 
     private static final File one = new File("dayOne.txt");
     private static final File two = new File("dayTwo.txt");
+    private static final File three = new File("dayThree.txt");
 
-    public static void main(String[] args) throws FileNotFoundException {
+    public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
 //        System.out.println(dayTwo());
+        System.out.println(dayThree());
     }
 
 
@@ -74,6 +75,87 @@ public class AdventOfCode {
             }
         }
         return validCount;
+    }
+
+    public static int dayThree() throws IOException {
+        int countOne = 0, countThree = 0, countFive = 0, countSeven = 0, countSkip = 0, lineCount = 0;
+        String buff;
+        BufferedReader reader = new BufferedReader(new FileReader(three));
+
+        int currentX = 0;
+        while ((buff = reader.readLine()) != null) {
+            if (buff.charAt(currentX) == '#') {
+                countOne++;
+            }
+
+            currentX++;
+            if (currentX >= buff.length())
+                currentX = currentX % buff.length();
+        }
+        reader.close();
+
+
+        currentX = 0;
+        reader = new BufferedReader(new FileReader(three));
+        while ((buff = reader.readLine()) != null) {
+            if (buff.charAt(currentX) == '#') {
+                countThree++;
+            }
+
+            currentX += 3;
+            if (currentX >= buff.length())
+                currentX = currentX % buff.length();
+        }
+        reader.close();
+
+        currentX = 0;
+        reader = new BufferedReader(new FileReader(three));
+        while ((buff = reader.readLine()) != null) {
+            if (buff.charAt(currentX) == '#') {
+                countFive++;
+            }
+
+            currentX += 5;
+            if (currentX >= buff.length())
+                currentX = currentX % buff.length();
+        }
+        reader.close();
+
+        currentX = 0;
+        reader = new BufferedReader(new FileReader(three));
+        while ((buff = reader.readLine()) != null) {
+            if (buff.charAt(currentX) == '#') {
+                countSeven++;
+            }
+            System.out.println(currentX);
+            currentX += 7;
+            if (currentX >= buff.length())
+                currentX = currentX % buff.length();
+        }
+        reader.close();
+
+        currentX = 0;
+        reader = new BufferedReader(new FileReader(three));
+        while ((buff = reader.readLine()) != null) {
+            if (lineCount % 2 == 0) {
+                if (buff.charAt(currentX) == '#') {
+                    countSkip++;
+                }
+
+                currentX++;
+                if (currentX >= buff.length())
+                    currentX = currentX % buff.length();
+            }
+            lineCount++;
+        }
+
+        reader.close();
+//        System.out.println(countOne);
+//        System.out.println(countThree);
+//        System.out.println(countFive);
+//        System.out.println(countSeven);
+//        System.out.println(countSkip);
+        return countOne * countThree * countFive * countSeven * countSkip;
     }
 
     public static String[] separate(String line) {
