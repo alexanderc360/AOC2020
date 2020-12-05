@@ -15,14 +15,14 @@ public class AdventOfCode {
     private static final File four = new File("dayFour.txt");
 
     public static void main(String[] args) throws IOException {
-        System.out.println(dayOne());
-//        System.out.println(dayTwo());
+//        System.out.println(dayOne());
+        System.out.println(dayTwo());
 //        System.out.println(dayThree());
 //        System.out.println(dayFour());
     }
 
 
-    public static int dayOne() throws IOException {//232508760
+    public static int dayOne() throws IOException {
         String buff;
         BufferedReader reader = new BufferedReader(new FileReader(one));
         ArrayList<Integer> nums = new ArrayList<>();
@@ -43,26 +43,16 @@ public class AdventOfCode {
         return 0;
     }
 
-    public static int dayTwo() throws FileNotFoundException {
-        Scanner s = new Scanner(two);
-        Scanner scanCount = new Scanner(two);
-        int count = 0, validCount = 0;
+    public static int dayTwo() throws IOException { //294
+        String buff;
+        BufferedReader reader = new BufferedReader(new FileReader(two));
+        int validCount = 0;
 
-        while (scanCount.hasNextLine()) {
-            count++;
-            scanCount.nextLine();
-        }
-        String[] lines = new String[count];
-
-        for (int i = 0; i < count; i++) {
-            lines[i] = s.nextLine();
-        }
         String[] decrypt;
-        for (int i = 0; i < count; i++) {
-            decrypt = separate(lines[i]);
+        while ((buff = reader.readLine()) != null) {
+            decrypt = separate(buff);
             int buffCount = 0;
 
-//            int letterVal = countLetter(decrypt[2].charAt(0), decrypt[3]);
 
             if (decrypt[3].length() >= Integer.parseInt(decrypt[1])) {
                 if (decrypt[3].charAt(Integer.parseInt(decrypt[0]) - 1) == decrypt[2].charAt(0)) {
