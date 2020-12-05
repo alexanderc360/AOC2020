@@ -2,10 +2,7 @@ import javafx.beans.binding.MapBinding;
 import javafx.collections.ObservableMap;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 
 public class AdventOfCode {
 
@@ -13,12 +10,14 @@ public class AdventOfCode {
     private static final File two = new File("dayTwo.txt");
     private static final File three = new File("dayThree.txt");
     private static final File four = new File("dayFour.txt");
+    private static final File five = new File("dayFive.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
-        System.out.println(dayTwo());
+//        System.out.println(dayTwo());
 //        System.out.println(dayThree());
 //        System.out.println(dayFour());
+        System.out.println(dayFive());
     }
 
 
@@ -154,13 +153,13 @@ public class AdventOfCode {
         while ((buff = reader.readLine()) != null) {
             passportString = passportString.concat(buff).concat(" ");
             if (buff.isEmpty()) {
-//                passPorts.add(passportString.split(" "));
+                passPorts.add(passportString.split(" "));
                 passportString = "";
             }
         }
         passPorts.add(passportString.split(" "));
 
-        boolean boolBuff, valid = false;
+        boolean boolBuff;
         for (String[] passPort : passPorts) {
             Arrays.sort(passPort);
             boolBuff = true;
@@ -181,13 +180,68 @@ public class AdventOfCode {
 
         for (String[] passPort : part2) {
             if (check(passPort)) {
+//                System.out.println(Arrays.toString(passPort));
                 count++;
-                System.out.println(Arrays.toString(passPort));
             }
         }
 
 
         return count;
+    }
+
+    public static int dayFive() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(five));
+        String buff;
+        int rowTop, rowBottom, rowMid, rowResult;
+        int colTop, colBottom, colMid, colResult;
+        int max = 0, result, mySeat = 0;
+        ArrayList<Integer> seats = new ArrayList<>();
+        while ((buff = reader.readLine()) != null) {
+            rowTop = 127;
+            rowBottom = colBottom = 0;
+            rowResult = colResult = 0;
+            colTop = 7;
+            for (int i = 0; i < buff.length(); i++) {
+                rowMid = (rowTop + rowBottom) / 2;
+                colMid = (colTop + colBottom) / 2;
+
+
+                if (buff.charAt(i) == 'B') {
+                    if (rowMid % 2 != 0)
+                        rowMid++;
+                    rowBottom = rowMid;
+                } else if (buff.charAt(i) == 'F') {
+                    rowTop = rowMid;
+                } else if (buff.charAt(i) == 'R') {
+                    if (colMid % 2 != 0)
+                        colMid++;
+                    colBottom = colMid;
+                } else if (buff.charAt(i) == 'L') {
+                    colTop = colMid;
+                }
+                if (i == 6) {
+                    if (buff.charAt(i) == 'B')
+                        rowResult = rowTop;
+                    else if (buff.charAt(i) == 'F')
+                        rowResult = rowBottom;
+                } else if (i == 9) {
+                    if (buff.charAt(i) == 'R')
+                        colResult = colTop;
+                    else if (buff.charAt(i) == 'L')
+                        colResult = colBottom;
+                }
+            }
+            result = (rowResult * 8) + colResult;
+            seats.add(result);
+//            if (result > max)
+//                max = result;
+        }
+        Collections.sort(seats);
+        for (int i = 1; i < seats.size(); i++)
+            if (seats.get(i) - seats.get(i - 1) == 2)
+                mySeat = seats.get(i) - 1;
+
+        return mySeat;
     }
 
     public static boolean check(String[] passport) {
@@ -196,6 +250,7 @@ public class AdventOfCode {
         for (String s : passport) {
             type = s.substring(0, 3);
             val = s.substring(s.indexOf(":") + 1);
+//            System.out.println(val);
             switch (type) {
                 case "byr":
                     buff = Integer.parseInt(val);
@@ -218,14 +273,15 @@ public class AdventOfCode {
                         return false;
                     return true;
                 case "hgt":
-                    if (val.contains("cm")) {
-                        buff = Integer.parseInt(val.substring(0, 2));
+                    System.out.println("hello");
+                    if (val.contains("cm") && val.length() == 5) {
+                        buff = Integer.parseInt(val.substring(0, 3));
                         return (buff >= 150 && buff <= 193);
-                    } else if (val.contains("in")) {
-                        buff = Integer.parseInt(val.substring(0, 1));
+                    } else if (val.contains("in") && val.length() == 4) {
+                        buff = Integer.parseInt(val.substring(0, 2));
                         return (buff >= 59 && buff <= 76);
-                    }
-                    break;
+                    } else
+                        return false;
                 case "iyr":
                     buff = Integer.parseInt(val);
                     return (buff >= 2010 && buff <= 2020);
