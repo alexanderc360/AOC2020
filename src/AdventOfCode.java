@@ -1,5 +1,10 @@
+import javafx.beans.binding.MapBinding;
+import javafx.collections.ObservableMap;
+
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Scanner;
 
 public class AdventOfCode {
@@ -12,8 +17,8 @@ public class AdventOfCode {
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
 //        System.out.println(dayTwo());
-        System.out.println(dayThree());
-//        System.out.println(dayFour());
+//        System.out.println(dayThree());
+        System.out.println(dayFour());
     }
 
 
@@ -155,9 +160,104 @@ public class AdventOfCode {
         return countOne * countThree * countFive * countSeven * countSkip;
     }
 
-    public static int dayFour() {
+    public static int dayFour() throws IOException {
+        int count = 0;
+        BufferedReader reader = new BufferedReader(new FileReader(four));
+        String buff, passportString = "";
 
-        return 0;
+        ArrayList<String[]> passPorts = new ArrayList<>();
+        ArrayList<String[]> part2 = new ArrayList<>();
+        while ((buff = reader.readLine()) != null) {
+            passportString = passportString.concat(buff).concat(" ");
+            if (buff.isEmpty()) {
+//                passPorts.add(passportString.split(" "));
+                passportString = "";
+            }
+        }
+        passPorts.add(passportString.split(" "));
+
+        boolean boolBuff, valid = false;
+        for (String[] passPort : passPorts) {
+            Arrays.sort(passPort);
+            boolBuff = true;
+
+            if ((passPort.length == 8))
+                part2.add(passPort);
+            else if (passPort.length == 7) {
+                for (String value : passPort) {
+                    if (value.contains("cid")) {
+                        boolBuff = false;
+                        break;
+                    }
+                }
+                if (boolBuff)
+                    part2.add(passPort);
+            }
+        }
+
+        for (String[] passPort : part2) {
+            if (check(passPort)) {
+                count++;
+                System.out.println(Arrays.toString(passPort));
+            }
+        }
+
+
+        return count;
+    }
+
+    public static boolean check(String[] passport) {
+        String val, type;
+        int buff;
+        for (String s : passport) {
+            type = s.substring(0, 3);
+            val = s.substring(s.indexOf(":") + 1);
+            switch (type) {
+                case "byr":
+                    buff = Integer.parseInt(val);
+                    return (buff >= 1920 && buff <= 2002);
+                case "ecl":
+                    return (val.equals("amb") || val.equals("blu") || val.equals("brn")
+                            || val.equals("gry") || val.equals("grn")
+                            || val.equals("hzl") || val.equals("oth"));
+                case "eyr":
+                    buff = Integer.parseInt(val);
+                    return (buff >= 2020 && buff <= 2030);
+                case "hcl":
+                    if (val.charAt(0) == '#' && val.length() == 7) {
+                        for (int i = 0; i < val.length(); i++) {
+                            if (!((val.charAt(i) >= 48 && val.charAt(i) <= 57) || (val.charAt(i) >= 97 && val.charAt(i) <= 102))) {
+                                return false;
+                            }
+                        }
+                    } else
+                        return false;
+                    return true;
+                case "hgt":
+                    if (val.contains("cm")) {
+                        buff = Integer.parseInt(val.substring(0, 2));
+                        return (buff >= 150 && buff <= 193);
+                    } else if (val.contains("in")) {
+                        buff = Integer.parseInt(val.substring(0, 1));
+                        return (buff >= 59 && buff <= 76);
+                    }
+                    break;
+                case "iyr":
+                    buff = Integer.parseInt(val);
+                    return (buff >= 2010 && buff <= 2020);
+                case "pid":
+                    if (val.length() == 9) {
+                        for (int i = 0; i < 9; i++) {
+                            if (!(val.charAt(i) >= 48 && val.charAt(i) <= 57)) {
+                                return false;
+                            }
+                        }
+                    } else
+                        return false;
+                    return true;
+            }
+        }
+        return true;
     }
 
     public static String[] separate(String line) {
