@@ -15,33 +15,27 @@ public class AdventOfCode {
     private static final File four = new File("dayFour.txt");
 
     public static void main(String[] args) throws IOException {
-//        System.out.println(dayOne());
+        System.out.println(dayOne());
 //        System.out.println(dayTwo());
 //        System.out.println(dayThree());
-        System.out.println(dayFour());
+//        System.out.println(dayFour());
     }
 
 
-    public static int dayOne() throws FileNotFoundException {
-        Scanner s = new Scanner(one);
-        Scanner scanCount = new Scanner(one);
-        int count = 0;
+    public static int dayOne() throws IOException {//232508760
+        String buff;
+        BufferedReader reader = new BufferedReader(new FileReader(one));
+        ArrayList<Integer> nums = new ArrayList<>();
 
-        while (scanCount.hasNextInt()) {
-            count++;
-            scanCount.nextInt();
-        }
-        int[] nums = new int[count];
-
-        for (int i = 0; i < count; i++) {
-            nums[i] = s.nextInt();
+        while ((buff = reader.readLine()) != null) {
+            nums.add(Integer.parseInt(buff));
         }
 
-        for (int i = 0; i < nums.length; i++) {
-            for (int j = 0; j < nums.length; j++) {
-                for (int k = 0; k < nums.length; k++) {
-                    if (nums[i] + nums[j] + nums[k] == 2020 && (i != j && i != k && j != k)) {
-                        return nums[i] * nums[j] * nums[k];
+        for (int i = 0; i < nums.size(); i++) {
+            for (int j = 0; j < nums.size(); j++) {
+                for (int k = 0; k < nums.size(); k++) {
+                    if (nums.get(i) + nums.get(j) + nums.get(k) == 2020 && (i != j && i != k && j != k)) {
+                        return nums.get(i) * nums.get(j) * nums.get(k);
                     }
                 }
             }
