@@ -11,13 +11,15 @@ public class AdventOfCode {
     private static final File three = new File("dayThree.txt");
     private static final File four = new File("dayFour.txt");
     private static final File five = new File("dayFive.txt");
+    private static final File six = new File("daySix.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
 //        System.out.println(dayTwo());
 //        System.out.println(dayThree());
 //        System.out.println(dayFour());
-        System.out.println(dayFive());
+//        System.out.println(dayFive());
+        System.out.println(daySix());
     }
 
 
@@ -244,6 +246,57 @@ public class AdventOfCode {
         return mySeat;
     }
 
+    public static int daySix() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(six));
+        String buff;
+        int total = 0, groupTotal;
+//        ArrayList<Character> group = new ArrayList<>(); //part 1
+        ArrayList<String> group = new ArrayList<>();
+
+        while ((buff = reader.readLine()) != null) {
+            //part 1
+//            for (int i = 0; i < buff.length(); i++) {
+//                System.out.println(buff.charAt(i));
+//                if (!group.contains(buff.charAt(i))) {
+//                    group.add(buff.charAt(i));
+//                }
+//            }
+//            if (buff.isEmpty()) {
+//                total += group.size();
+//                group.clear();
+//            }
+            group.add(buff);
+            if (buff.isEmpty()) {
+                group.remove(group.size() - 1);
+                total += getTotal(group);
+                group.clear();
+            }
+
+        }
+        total += getTotal(group);
+        return total;
+    }
+
+    private static int getTotal(ArrayList<String> group) {
+        int groupTotal = 0;
+        boolean inEvery;
+        char charBuff;
+        for (int i = 0; i < group.get(0).length(); i++) {
+            inEvery = true;
+            charBuff = group.get(0).charAt(i);
+            for (String s : group) {
+                if (s.indexOf(charBuff) == -1) {
+                    inEvery = false;
+                    break;
+                }
+            }
+            if (inEvery)
+                groupTotal++;
+        }
+
+        return groupTotal;
+    } // day 6
+
     public static boolean check(String[] passport) {
         String val, type;
         int buff;
@@ -298,7 +351,7 @@ public class AdventOfCode {
             }
         }
         return true;
-    }
+    } // day 4
 
     public static String[] separate(String line) {
         String[] decrypted = new String[4];
