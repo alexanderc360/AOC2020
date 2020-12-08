@@ -313,7 +313,7 @@ public class AdventOfCode {
         return countBags(bags, "shiny gold", 1) - 1;
     }
 
-    private static long countBags(HashMap<String, String> bags, String bagType, int numOfSubBags) {
+    private static long countBags(HashMap<String, String> bags, String bagType, long numOfSubBags) {
         String buff = bags.get(bagType);
         System.out.println(buff);
         for (int i = 0; i < buff.length(); i++) {
