@@ -13,6 +13,7 @@ public class AdventOfCode {
     private static final File five = new File("dayFive.txt");
     private static final File six = new File("daySix.txt");
     private static final File seven = new File("daySeven.txt");
+    private static final File eight = new File("dayEight.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
@@ -21,7 +22,9 @@ public class AdventOfCode {
 //        System.out.println(dayFour());
 //        System.out.println(dayFive());
 //        System.out.println(daySix());
-        System.out.println(daySeven());
+//        System.out.println(daySeven());
+//        System.out.println(dayEight());
+        dayEight();
     }
 
 
@@ -310,16 +313,89 @@ public class AdventOfCode {
 //            }
 //        }
 
-        return countBags(bags, "shiny gold", 1) - 1;
+        return countBags(bags, "shiny gold") - 1;
     }
 
-    private static long countBags(HashMap<String, String> bags, String bagType, long numOfSubBags) {
+    public static void dayEight() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(eight));
+        ArrayList<String> instructions = new ArrayList<>();
+        ArrayList<Integer> repeated = new ArrayList<>();
+        String buff, current;
+        int accumulator = 0;
+
+        while ((buff = reader.readLine()) != null) {
+            instructions.add(buff);
+        }
+        ArrayList<String> stringBuff = new ArrayList<>(instructions);
+
+        for (int i = 0; i < instructions.size(); i++) {
+            if (end(stringBuff, i))
+                System.out.println("instruction: " + i);
+            stringBuff = new ArrayList<>(instructions);
+        }
+
+//Part 1
+//        for (int i = 0; i < instructions.size(); i++) {
+//            if (repeated.contains(i)){
+////                System.out.println(accumulator);
+//                  break;
+//              }
+//            repeated.add(i);
+//            current = instructions.get(i);
+////            System.out.println(i + " " + current);
+//            System.out.println(Integer.parseInt(current.substring(4)));
+//            switch (current.substring(0, 3)) {
+//                case "acc":
+//                    accumulator += Integer.parseInt(current.substring(4));
+//                    break;
+//                case "jmp":
+//                    i += (Integer.parseInt(current.substring(4)) - 1);
+//                    break;
+//                case "nop":
+//                    break;
+//            }
+//        }
+    }
+
+    private static boolean end(ArrayList<String> list, int i) {
+        ArrayList<Integer> repeated = new ArrayList<>();
+        String current;
+        int accumulator = 0;
+
+        if (list.get(i).startsWith("nop"))
+            list.set(i, "jmp" + list.get(i).substring(3));
+        else if (list.get(i).startsWith("jmp"))
+            list.set(i, "nop" + list.get(i).substring(3));
+
+        for (int j = 0; j < list.size(); j++) {
+            if (repeated.contains(j)) {
+                return false;
+            }
+            repeated.add(j);
+            current = list.get(j);
+            switch (current.substring(0, 3)) {
+                case "acc":
+                    accumulator += Integer.parseInt(current.substring(4));
+                    break;
+                case "jmp":
+                    j += (Integer.parseInt(current.substring(4)) - 1);
+                    break;
+                case "nop":
+                    break;
+            }
+        }
+        System.out.println("accumulator: " + accumulator);
+        return true;
+    } // day 8
+
+    private static long countBags(HashMap<String, String> bags, String bagType) {
+        long numOfSubBags = 1;
         String buff = bags.get(bagType);
-        System.out.println(buff);
+//        System.out.println(bagType + ": " + buff + "\n" + numOfSubBags);
         for (int i = 0; i < buff.length(); i++) {
             if (buff.charAt(i) >= 48 && buff.charAt(i) <= 57) {
                 numOfSubBags += ((buff.charAt(i) - 48) * countBags(bags, buff.substring(i + 2,
-                        buff.indexOf("bag", i)).trim(), numOfSubBags));
+                        buff.indexOf("bag", i)).trim()));
             }
         }
         return numOfSubBags;
