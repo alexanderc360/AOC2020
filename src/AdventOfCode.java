@@ -12,6 +12,7 @@ public class AdventOfCode {
     private static final File four = new File("dayFour.txt");
     private static final File five = new File("dayFive.txt");
     private static final File six = new File("daySix.txt");
+    private static final File seven = new File("daySeven.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
@@ -19,7 +20,8 @@ public class AdventOfCode {
 //        System.out.println(dayThree());
 //        System.out.println(dayFour());
 //        System.out.println(dayFive());
-        System.out.println(daySix());
+//        System.out.println(daySix());
+        System.out.println(daySeven());
     }
 
 
@@ -276,6 +278,52 @@ public class AdventOfCode {
         total += getTotal(group);
         return total;
     }
+
+    public static long daySeven() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(seven));
+        HashMap<String, String> bags = new HashMap<>();
+        HashSet<String> paths = new HashSet<>();
+        String buff;
+        while ((buff = reader.readLine()) != null) {
+            bags.put(buff.substring(0, buff.indexOf(" bag")), buff.substring(buff.indexOf("contain") + 7));
+        }
+
+
+//        paths.add("shiny gold");
+//        String stringBuff;
+//        boolean anythingNew = true;
+//        ArrayList<String> thingsToAdd = new ArrayList<>();
+//        while (anythingNew) {
+//            anythingNew = false;
+//            for (Map.Entry entry : bags.entrySet()) {
+//                for (String s : paths) {
+//                    stringBuff = entry.getValue().toString();
+//                    if (stringBuff.contains(s)) {
+//                        if (!paths.contains((String) entry.getKey())) {
+//                            thingsToAdd.add((String) entry.getKey());
+//                            anythingNew = true;
+//                        }
+//                    }
+//                }
+//                paths.addAll(thingsToAdd);
+//                thingsToAdd.clear();
+//            }
+//        }
+
+        return countBags(bags, "shiny gold", 1) - 1;
+    }
+
+    private static long countBags(HashMap<String, String> bags, String bagType, int numOfSubBags) {
+        String buff = bags.get(bagType);
+        System.out.println(buff);
+        for (int i = 0; i < buff.length(); i++) {
+            if (buff.charAt(i) >= 48 && buff.charAt(i) <= 57) {
+                numOfSubBags += ((buff.charAt(i) - 48) * countBags(bags, buff.substring(i + 2,
+                        buff.indexOf("bag", i)).trim(), numOfSubBags));
+            }
+        }
+        return numOfSubBags;
+    } // day 7
 
     private static int getTotal(ArrayList<String> group) {
         int groupTotal = 0;
