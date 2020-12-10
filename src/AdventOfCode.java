@@ -28,7 +28,7 @@ public class AdventOfCode {
 //        System.out.println(daySeven());
 //        dayEight();
 //        System.out.println(dayNine());
-        dayTen();
+//        dayTen();
     }
 
     public static int dayOne() throws IOException {
@@ -188,11 +188,14 @@ public class AdventOfCode {
             }
         }
 
+        count = part2.size();
         for (String[] passPort : part2) {
-            if (check(passPort)) {
-//                System.out.println(Arrays.toString(passPort));
-                count++;
-            }
+            for (String s : passPort)
+                if (!check(s)) {
+                    System.out.println(s);
+                    count--;
+                    break;
+                }
         }
 
 
@@ -513,59 +516,56 @@ public class AdventOfCode {
         return groupTotal;
     } // day 6
 
-    public static boolean check(String[] passport) {
+    public static boolean check(String item) {
         String val, type;
         int buff;
-        for (String s : passport) {
-            type = s.substring(0, 3);
-            val = s.substring(s.indexOf(":") + 1);
-//            System.out.println(val);
-            switch (type) {
-                case "byr":
-                    buff = Integer.parseInt(val);
-                    return (buff >= 1920 && buff <= 2002);
-                case "ecl":
-                    return (val.equals("amb") || val.equals("blu") || val.equals("brn")
-                            || val.equals("gry") || val.equals("grn")
-                            || val.equals("hzl") || val.equals("oth"));
-                case "eyr":
-                    buff = Integer.parseInt(val);
-                    return (buff >= 2020 && buff <= 2030);
-                case "hcl":
-                    if (val.charAt(0) == '#' && val.length() == 7) {
-                        for (int i = 0; i < val.length(); i++) {
-                            if (!((val.charAt(i) >= 48 && val.charAt(i) <= 57) || (val.charAt(i) >= 97 && val.charAt(i) <= 102))) {
-                                return false;
-                            }
+        type = item.substring(0, 3);
+        val = item.substring(item.indexOf(":") + 1);
+        switch (type) {
+            case "byr":
+                buff = Integer.parseInt(val);
+                return (buff >= 1920 && buff <= 2002);
+            case "ecl":
+                return (val.equals("amb") || val.equals("blu") || val.equals("brn")
+                        || val.equals("gry") || val.equals("grn")
+                        || val.equals("hzl") || val.equals("oth"));
+            case "eyr":
+                buff = Integer.parseInt(val);
+                return (buff >= 2020 && buff <= 2030);
+            case "hcl":
+                if (val.charAt(0) == '#' && val.length() == 7) {
+                    for (int i = 1; i < val.length(); i++) {
+                        if (!((val.charAt(i) >= 48 && val.charAt(i) <= 57) || (val.charAt(i) >= 97 && val.charAt(i) <= 102))) {
+                            return false;
                         }
-                    } else
-                        return false;
-                    return true;
-                case "hgt":
-                    System.out.println("hello");
-                    if (val.contains("cm") && val.length() == 5) {
-                        buff = Integer.parseInt(val.substring(0, 3));
-                        return (buff >= 150 && buff <= 193);
-                    } else if (val.contains("in") && val.length() == 4) {
-                        buff = Integer.parseInt(val.substring(0, 2));
-                        return (buff >= 59 && buff <= 76);
-                    } else
-                        return false;
-                case "iyr":
-                    buff = Integer.parseInt(val);
-                    return (buff >= 2010 && buff <= 2020);
-                case "pid":
-                    if (val.length() == 9) {
-                        for (int i = 0; i < 9; i++) {
-                            if (!(val.charAt(i) >= 48 && val.charAt(i) <= 57)) {
-                                return false;
-                            }
+                    }
+                } else
+                    return false;
+                return true;
+            case "hgt":
+                if (val.contains("cm") && val.length() == 5) {
+                    buff = Integer.parseInt(val.substring(0, 3));
+                    return (buff >= 150 && buff <= 193);
+                } else if (val.contains("in") && val.length() == 4) {
+                    buff = Integer.parseInt(val.substring(0, 2));
+                    return (buff >= 59 && buff <= 76);
+                } else
+                    return false;
+            case "iyr":
+                buff = Integer.parseInt(val);
+                return (buff >= 2010 && buff <= 2020);
+            case "pid":
+                if (val.length() == 9) {
+                    for (int i = 0; i < 9; i++) {
+                        if (!(val.charAt(i) >= 48 && val.charAt(i) <= 57)) {
+                            return false;
                         }
-                    } else
-                        return false;
-                    return true;
-            }
+                    }
+                } else
+                    return false;
+                return true;
         }
+
         return true;
     } // day 4
 
