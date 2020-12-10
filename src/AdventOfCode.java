@@ -2,6 +2,7 @@ import javafx.beans.binding.MapBinding;
 import javafx.collections.ObservableMap;
 
 import java.io.*;
+import java.lang.reflect.AnnotatedType;
 import java.util.*;
 
 public class AdventOfCode {
@@ -14,6 +15,7 @@ public class AdventOfCode {
     private static final File six = new File("daySix.txt");
     private static final File seven = new File("daySeven.txt");
     private static final File eight = new File("dayEight.txt");
+    private static final File nine = new File("dayNine.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
@@ -23,10 +25,9 @@ public class AdventOfCode {
 //        System.out.println(dayFive());
 //        System.out.println(daySix());
 //        System.out.println(daySeven());
-//        System.out.println(dayEight());
-        dayEight();
+//        dayEight();
+        System.out.println(dayNine());
     }
-
 
     public static int dayOne() throws IOException {
         String buff;
@@ -357,6 +358,56 @@ public class AdventOfCode {
 //        }
     }
 
+    public static long dayNine() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(nine));
+        ArrayList<Long> nums = new ArrayList<>();
+        ArrayList<Long> list = new ArrayList<>();
+        ArrayList<Integer> invalid = new ArrayList<>();
+        String buff;
+        long part1 = 0;
+
+        while ((buff = reader.readLine()) != null) {
+            nums.add(Long.parseLong(buff));
+        }
+        for (int i = 0; i < nums.size() - 25; i++) {
+            if (!preamble(nums, i, i + 24)) {
+                part1 = nums.get(i + 25);
+//                System.out.println(part1);
+            }
+        }
+
+        int iterator = 0, part2;
+        for (int i = 0; i < nums.size(); i++) {
+            iterator = i;
+            part2 = 0;
+            list = new ArrayList<>();
+            while (part2 < part1) {
+                part2 += nums.get(iterator);
+                list.add(nums.get(iterator));
+
+                if (part2 == part1) {
+                    Collections.sort(list);
+                    return list.get(0) + list.get(list.size() - 1);
+                }
+                iterator++;
+            }
+        }
+        return 0;
+    }
+
+    public static boolean preamble(ArrayList<Long> nums, int start, int stop) {
+        boolean valid = false;
+        for (int i = start; i < stop + 1; i++) {
+            for (int j = start; j < stop + 1; j++) {
+                if (nums.get(i) + nums.get(j) == nums.get(stop + 1) && i != j) {
+                    valid = true;
+                    break;
+                }
+            }
+        }
+        return valid;
+    }
+
     private static boolean end(ArrayList<String> list, int i) {
         ArrayList<Integer> repeated = new ArrayList<>();
         String current;
@@ -391,7 +442,6 @@ public class AdventOfCode {
     private static long countBags(HashMap<String, String> bags, String bagType) {
         long numOfSubBags = 1;
         String buff = bags.get(bagType);
-//        System.out.println(bagType + ": " + buff + "\n" + numOfSubBags);
         for (int i = 0; i < buff.length(); i++) {
             if (buff.charAt(i) >= 48 && buff.charAt(i) <= 57) {
                 numOfSubBags += ((buff.charAt(i) - 48) * countBags(bags, buff.substring(i + 2,
