@@ -16,6 +16,7 @@ public class AdventOfCode {
     private static final File seven = new File("daySeven.txt");
     private static final File eight = new File("dayEight.txt");
     private static final File nine = new File("dayNine.txt");
+    private static final File ten = new File("dayTen.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
@@ -26,7 +27,8 @@ public class AdventOfCode {
 //        System.out.println(daySix());
 //        System.out.println(daySeven());
 //        dayEight();
-        System.out.println(dayNine());
+//        System.out.println(dayNine());
+        dayTen();
     }
 
     public static int dayOne() throws IOException {
@@ -395,6 +397,47 @@ public class AdventOfCode {
         return 0;
     }
 
+    public static void dayTen() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(ten));
+        String buff;
+        ArrayList<Integer> adapters = new ArrayList<>();
+        adapters.add(0);
+        while ((buff = reader.readLine()) != null) {
+            adapters.add(Integer.parseInt(buff));
+        }
+        long[] paths = new long[adapters.size()];
+        Arrays.fill(paths, 0);
+        int currentAdapt = 0, oneCount = 0, threeCount = 0;
+
+        Collections.sort(adapters);
+        System.out.println(adapters);
+        paths[0] = 1;
+        for (int i = 0; i < adapters.size(); i++) {
+            if (adapters.contains(adapters.get(i) - 1)) {
+                paths[i] += paths[adapters.indexOf(adapters.get(i) - 1)];
+            }
+            if (adapters.contains(adapters.get(i) - 2)) {
+                paths[i] += paths[adapters.indexOf(adapters.get(i) - 2)];
+            }
+            if (adapters.contains(adapters.get(i) - 3)) {
+                paths[i] += paths[adapters.indexOf(adapters.get(i) - 3)];
+            }
+        }
+        System.out.println(Arrays.toString(paths));
+
+        System.out.println("combos: " + paths[paths.length - 1]);
+        //part 1
+//        for (int i = 0; i < adapters.size() - 1; i++) {
+//            if (adapters.get(i + 1) - adapters.get(i) == 1) {
+//                oneCount++;
+//            } else if (adapters.get(i + 1) - adapters.get(i) == 3) {
+//                threeCount++;
+//            }
+//        }
+//
+//        System.out.println((threeCount + 1) * oneCount);
+    }
+
     public static boolean preamble(ArrayList<Long> nums, int start, int stop) {
         boolean valid = false;
         for (int i = start; i < stop + 1; i++) {
@@ -406,7 +449,7 @@ public class AdventOfCode {
             }
         }
         return valid;
-    }
+    } // day 9
 
     private static boolean end(ArrayList<String> list, int i) {
         ArrayList<Integer> repeated = new ArrayList<>();
