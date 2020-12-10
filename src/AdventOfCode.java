@@ -406,7 +406,6 @@ public class AdventOfCode {
             adapters.add(Integer.parseInt(buff));
         }
         long[] paths = new long[adapters.size()];
-        Arrays.fill(paths, 0);
         int currentAdapt = 0, oneCount = 0, threeCount = 0;
 
         Collections.sort(adapters);
