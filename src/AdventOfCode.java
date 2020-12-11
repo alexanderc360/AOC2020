@@ -17,6 +17,7 @@ public class AdventOfCode {
     private static final File eight = new File("dayEight.txt");
     private static final File nine = new File("dayNine.txt");
     private static final File ten = new File("dayTen.txt");
+    private static final File eleven = new File("dayEleven.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
@@ -29,6 +30,7 @@ public class AdventOfCode {
 //        dayEight();
 //        System.out.println(dayNine());
 //        dayTen();
+        System.out.println(dayEleven());
     }
 
     public static int dayOne() throws IOException {
@@ -439,6 +441,192 @@ public class AdventOfCode {
 //
 //        System.out.println((threeCount + 1) * oneCount);
     }
+
+    public static int dayEleven() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(eleven));
+        String buff;
+        ArrayList<String> lines = new ArrayList<>();
+
+        while ((buff = reader.readLine()) != null) {
+            lines.add(buff);
+        }
+
+        char[][] seats = new char[lines.size()][lines.get(0).length()];
+        for (int i = 0; i < seats.length; i++) {
+            for (int j = 0; j < seats[0].length; j++) {
+                seats[i][j] = lines.get(i).charAt(j);
+            }
+        }
+
+        boolean done = false;
+        char[][] arrayBuff;
+
+        while (!done) {
+            arrayBuff = arrayChange(seats);
+            if (arrayBuff == null)
+                done = true;
+            else {
+                seats = arrayChange(seats);
+            }
+        }
+        return filledCount(seats);
+    }
+
+    public static int filledCount(char[][] array) {
+        int total = 0;
+        for (char[] chars : array) {
+            for (int j = 0; j < array[0].length; j++)
+                if (chars[j] == '#')
+                    total++;
+        }
+        return total;
+    } // day 11
+
+    public static char[][] arrayChange(char[][] seats) {
+        boolean done = true;
+        char[][] buff = new char[seats.length][seats[0].length];
+        for (int i = 0; i < seats.length; i++) {
+            for (int j = 0; j < seats[0].length; j++) {
+                if (seats[i][j] == 'L' && isFilled(seats, i, j) == 0) {
+                    buff[i][j] = '#';
+                    done = false;
+                } else if (seats[i][j] == '#' && isFilled(seats, i, j) >= 5) {
+                    buff[i][j] = 'L';
+                    done = false;
+                } else
+                    buff[i][j] = seats[i][j];
+            }
+        }
+        if (done) {
+            buff = null;
+        }
+        return buff;
+    } // day 11
+
+    public static int isFilled(char[][] array, int x, int y) {
+        int filled = 0;
+        int i = x, j = y;
+        //right
+        while (j >= 0 && j < array[0].length) {
+            if (j != y) {
+                if (array[i][j] == '#') {
+                    filled++;
+                    break;
+                } else if (array[i][j] == 'L')
+                    break;
+            }
+            j++;
+        }
+        i = x;
+        j = y;
+        //left
+        while (j >= 0 && j < array[0].length) {
+            if (j != y) {
+                if (array[i][j] == '#') {
+                    filled++;
+                    break;
+                } else if (array[i][j] == 'L')
+                    break;
+            }
+            j--;
+        }
+        i = x;
+        j = y;
+        //down
+        while (i >= 0 && i < array.length) {
+            if (i != x) {
+                if (array[i][j] == '#') {
+                    filled++;
+                    break;
+                } else if (array[i][j] == 'L')
+                    break;
+            }
+            i++;
+        }
+        i = x;
+        j = y;
+        //up
+        while (i >= 0 && i < array.length) {
+            if (i != x) {
+                if (array[i][j] == '#') {
+                    filled++;
+                    break;
+                } else if (array[i][j] == 'L')
+                    break;
+            }
+            i--;
+        }
+        i = x;
+        j = y;
+        //diag up-right
+        while (i >= 0 && i < array.length && j >= 0 && j < array[0].length) {
+            if (i != x && j != y) {
+                if (array[i][j] == '#') {
+                    filled++;
+                    break;
+                } else if (array[i][j] == 'L')
+                    break;
+            }
+            i++;
+            j--;
+        }
+        i = x;
+        j = y;
+        //diag up-left
+        while (i >= 0 && i < array.length && j >= 0 && j < array[0].length) {
+            if (i != x && j != y) {
+                if (array[i][j] == '#') {
+                    filled++;
+                    break;
+                } else if (array[i][j] == 'L')
+                    break;
+            }
+            i--;
+            j--;
+        }
+        i = x;
+        j = y;
+        //diag down-right
+        while (i >= 0 && i < array.length && j >= 0 && j < array[0].length) {
+            if (i != x && j != y) {
+                if (array[i][j] == '#') {
+                    filled++;
+                    break;
+                } else if (array[i][j] == 'L')
+                    break;
+            }
+            i++;
+            j++;
+        }
+        i = x;
+        j = y;
+        //diag down-left
+        while (i >= 0 && i < array.length && j >= 0 && j < array[0].length) {
+            if (i != x && j != y) {
+                if (array[i][j] == '#') {
+                    filled++;
+                    break;
+                } else if (array[i][j] == 'L')
+                    break;
+            }
+            i--;
+            j++;
+        }
+
+
+        //part 1
+//        for (int i = x - 1; i <= x + 1; i++) {
+//            for (int j = y - 1; j <= y + 1; j++) {
+//                if (i >= 0 && j >= 0 && i < array.length && j < array[0].length) {
+//                    if (array[i][j] == '#')
+//                        filled++;
+//                }
+//            }
+//        }
+//        if (array[x][y] == '#')
+//            filled--;
+        return filled;
+    } // day 11
 
     public static boolean preamble(ArrayList<Long> nums, int start, int stop) {
         boolean valid = false;
