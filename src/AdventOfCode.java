@@ -1,8 +1,5 @@
-import javafx.beans.binding.MapBinding;
-import javafx.collections.ObservableMap;
-
 import java.io.*;
-import java.lang.reflect.AnnotatedType;
+import java.lang.invoke.SwitchPoint;
 import java.util.*;
 
 public class AdventOfCode {
@@ -18,6 +15,7 @@ public class AdventOfCode {
     private static final File nine = new File("dayNine.txt");
     private static final File ten = new File("dayTen.txt");
     private static final File eleven = new File("dayEleven.txt");
+    private static final File twelve = new File("dayTwelve.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
@@ -30,7 +28,8 @@ public class AdventOfCode {
 //        dayEight();
 //        System.out.println(dayNine());
 //        dayTen();
-        System.out.println(dayEleven());
+//        System.out.println(dayEleven());
+        System.out.println(dayTwelve());
     }
 
     public static int dayOne() throws IOException {
@@ -470,6 +469,153 @@ public class AdventOfCode {
             }
         }
         return filledCount(seats);
+    }
+
+    public static int dayTwelve() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(twelve));
+        String buff;
+        ArrayList<String> directions = new ArrayList<>();
+        while ((buff = reader.readLine()) != null) {
+            directions.add(buff);
+        }
+
+        Coordinate boat = new Coordinate();
+        Coordinate wayPoint = new Coordinate(10, 1);
+        char currentDirec = 'E', direc;
+        int dist, tempX, tempY;
+
+        for (String direction : directions) {
+            direc = direction.charAt(0);
+            dist = Integer.parseInt(direction.substring(1));
+
+            switch (direc) {
+                case 'N':
+                    wayPoint.setY(wayPoint.getY() + dist);
+                    break;
+                case 'S':
+                    wayPoint.setY(wayPoint.getY() - dist);
+                    break;
+                case 'E':
+                    wayPoint.setX(wayPoint.getX() + dist);
+                    break;
+                case 'W':
+                    wayPoint.setX(wayPoint.getX() - dist);
+                    break;
+                case 'L':
+                    for (int i = 0; i < dist / 90; i++) {
+                        tempY = wayPoint.getY();
+                        wayPoint.setY(wayPoint.getX());
+                        wayPoint.setX(tempY * -1);
+                        switch (currentDirec) {
+                            case 'N':
+                                currentDirec = 'W';
+                                break;
+                            case 'S':
+                                currentDirec = 'E';
+                                break;
+                            case 'E':
+                                currentDirec = 'N';
+                                break;
+                            case 'W':
+                                currentDirec = 'S';
+                                break;
+                        }
+                    }
+                    break;
+                case 'R':
+                    for (int i = 0; i < dist / 90; i++) {
+                        tempX = wayPoint.getX();
+                        wayPoint.setX(wayPoint.getY());
+                        wayPoint.setY(tempX * -1);
+                        switch (currentDirec) {
+                            case 'N':
+                                currentDirec = 'E';
+                                break;
+                            case 'S':
+                                currentDirec = 'W';
+                                break;
+                            case 'E':
+                                currentDirec = 'S';
+                                break;
+                            case 'W':
+                                currentDirec = 'N';
+                                break;
+                        }
+                    }
+                    break;
+                case 'F':
+                    boat.setX(boat.getX() + (wayPoint.getX() * dist));
+                    boat.setY(boat.getY() + (wayPoint.getY() * dist));
+                    break;
+            }
+            //part 1
+//            switch (direc) {
+//                case 'E':
+//                    boat.setX(boat.getX() + dist);
+//                    break;
+//                case 'W':
+//                    boat.setX(boat.getX() - dist);
+//                    break;
+//                case 'N':
+//                    boat.setY(boat.getY() + dist);
+//                    break;
+//                case 'S':
+//                    boat.setY(boat.getY() - dist);
+//                    break;
+//                case 'F':
+//                    switch (currentDirec) {
+//                        case 'E':
+//                            boat.setX(boat.getX() + dist);
+//                            break;
+//                        case 'W':
+//                            boat.setX(boat.getX() - dist);
+//                            break;
+//                        case 'N':
+//                            boat.setY(boat.getY() + dist);
+//                            break;
+//                        case 'S':
+//                            boat.setY(boat.getY() - dist);
+//                            break;
+//                    }
+//                    break;
+//                case 'L':
+//                    for (int i = 0; i < dist / 90; i++)
+//                        switch (currentDirec) {
+//                            case 'E':
+//                                currentDirec = 'N';
+//                                break;
+//                            case 'W':
+//                                currentDirec = 'S';
+//                                break;
+//                            case 'N':
+//                                currentDirec = 'W';
+//                                break;
+//                            case 'S':
+//                                currentDirec = 'E';
+//                                break;
+//                        }
+//                    break;
+//                case 'R':
+//                    for (int i = 0; i < dist / 90; i++)
+//                        switch (currentDirec) {
+//                            case 'E':
+//                                currentDirec = 'S';
+//                                break;
+//                            case 'W':
+//                                currentDirec = 'N';
+//                                break;
+//                            case 'N':
+//                                currentDirec = 'E';
+//                                break;
+//                            case 'S':
+//                                currentDirec = 'W';
+//                                break;
+//                        }
+//                    break;
+//            }
+        }
+
+        return Math.abs(boat.getX()) + Math.abs(boat.getY());
     }
 
     public static int filledCount(char[][] array) {
