@@ -30,7 +30,8 @@ public class AdventOfCode {
 //        System.out.println(dayNine());
 //        dayTen();
 //        System.out.println(dayEleven());
-        System.out.println(dayTwelve());
+//        System.out.println(dayTwelve());
+        System.out.println(dayThirteen());
     }
 
     public static int dayOne() throws IOException {
