@@ -16,6 +16,7 @@ public class AdventOfCode {
     private static final File ten = new File("dayTen.txt");
     private static final File eleven = new File("dayEleven.txt");
     private static final File twelve = new File("dayTwelve.txt");
+    private static final File thirteen = new File("dayThirteen.txt");
 
     public static void main(String[] args) throws IOException {
 //        System.out.println(dayOne());
@@ -617,6 +618,82 @@ public class AdventOfCode {
 
         return Math.abs(boat.getX()) + Math.abs(boat.getY());
     }
+
+    public static long dayThirteen() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(thirteen));
+        String buff;
+        ArrayList<String> times = new ArrayList<>();
+        while ((buff = reader.readLine()) != null) {
+            times.add(buff);
+        }
+        String[] buses = times.get(1).split(",");
+        ArrayList<Long> mod = new ArrayList<>();
+        ArrayList<Long> num = new ArrayList<>();
+        long product = 1, total = 0;
+
+        for (int i = 0; i < buses.length; i++) {
+            if (!buses[i].equals("x")) {
+                int n = Integer.parseInt(buses[i]);
+                mod.add((long) (n - i) % n);
+                num.add((long) Integer.parseInt(buses[i]));
+            }
+        }
+
+        long[] prodOverNum = new long[num.size()];
+        long[] inverse = new long[num.size()];
+
+        for (long i : num)
+            product *= i;
+
+        for (int i = 0; i < num.size(); i++) {
+            prodOverNum[i] = product / num.get(i);
+            inverse[i] = pulverizer(prodOverNum[i], num.get(i));
+            total += (mod.get(i) * prodOverNum[i] * inverse[i]);
+
+        }
+        //part 1
+//        String correctBus = "";
+//        boolean arrived = false;
+//        while (!arrived) {
+//            for (String bus : buses) {
+//                if (!bus.equals("x"))
+//                    if (currentTime % Integer.parseInt(bus) == 0) {
+//                        correctBus = bus;
+//                        arrived = true;
+//                    }
+//            }
+//            currentTime++;
+//        }
+//
+//        return (Integer.parseInt(correctBus)) * ((currentTime - 1) - timeOfDeparture);
+        return total % product;
+    }
+
+    public static long pulverizer(long num1, long num2) {
+        long quotient, buff;
+        long n0 = num2, x0 = 0, x1 = 1;
+        if (num2 == 1)
+            return 0;
+
+        while (num1 > 1) {
+            quotient = num1 / num2;
+            buff = num2;
+
+            num2 = num1 % num2;
+            num1 = buff;
+
+            buff = x0;
+
+            x0 = x1 - quotient * x0;
+
+            x1 = buff;
+        }
+
+        if (x1 < 0)
+            x1 += n0;
+
+        return x1;
+    } // day 13
 
     public static int filledCount(char[][] array) {
         int total = 0;
