@@ -1,5 +1,5 @@
 import java.io.*;
-import java.lang.invoke.SwitchPoint;
+import java.time.Clock;
 import java.util.*;
 
 public class AdventOfCode {
@@ -17,8 +17,10 @@ public class AdventOfCode {
     private static final File eleven = new File("dayEleven.txt");
     private static final File twelve = new File("dayTwelve.txt");
     private static final File thirteen = new File("dayThirteen.txt");
+    private static final File fourteen = new File("dayFourteen.txt");
 
     public static void main(String[] args) throws IOException {
+        final long start = System.currentTimeMillis();
 //        System.out.println(dayOne());
 //        System.out.println(dayTwo());
 //        System.out.println(dayThree());
@@ -31,7 +33,10 @@ public class AdventOfCode {
 //        dayTen();
 //        System.out.println(dayEleven());
 //        System.out.println(dayTwelve());
-        System.out.println(dayThirteen());
+//        System.out.println(dayThirteen());
+        System.out.println(dayFourteen());
+        final long stop = System.currentTimeMillis();
+        System.out.println("time: " + (stop - start));
     }
 
     public static int dayOne() throws IOException {
@@ -650,8 +655,9 @@ public class AdventOfCode {
             prodOverNum[i] = product / num.get(i);
             inverse[i] = pulverizer(prodOverNum[i], num.get(i));
             total += (mod.get(i) * prodOverNum[i] * inverse[i]);
-
         }
+
+        System.out.println("Mod: " + mod + "\nProdOverNum: " + Arrays.toString(prodOverNum) + "\nInverse: " + Arrays.toString(inverse));
         //part 1
 //        String correctBus = "";
 //        boolean arrived = false;
@@ -669,6 +675,139 @@ public class AdventOfCode {
 //        return (Integer.parseInt(correctBus)) * ((currentTime - 1) - timeOfDeparture);
         return total % product;
     }
+
+    public static long dayFourteen() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fourteen));
+        String buff;
+        ArrayList<String> input = new ArrayList<>();
+        ArrayList<int[]> index = new ArrayList<>();
+        ArrayList<Long> index2 = new ArrayList<>();
+        ArrayList<String> value = new ArrayList<>();
+        ArrayList<String> value2 = new ArrayList<>();
+        while ((buff = reader.readLine()) != null) {
+            input.add(buff);
+        }
+        String bitMask = "";
+        int[] num;
+        long total = 0;
+
+        for (String s : input) {
+            if (s.startsWith("mask"))
+                bitMask = s.substring(7);
+            else if (s.startsWith("mem")) {
+                num = substitute(bitMask, decToBi(Integer.parseInt(s.substring(4, s.indexOf("]")))));
+                String substring = s.substring(s.indexOf("=") + 2);
+                if (!index.contains(num)) {
+                    index.add(num);
+                    value.add(substring);
+                } else {
+                    value.set(index.indexOf(num), substring);
+                }
+            }
+        }
+        int xCount, l;
+        int[] temp;
+        for (int i = 0; i < index.size(); i++) {
+            num = index.get(i);
+            temp = new int[num.length];
+            xCount = 0;
+            for (int anInt : num)
+                if (anInt == -1) {
+                    xCount++;
+                }
+
+            for (int[] combo : floating(xCount)) {
+                l = 0;
+                System.arraycopy(num, 0, temp, 0, num.length);
+                for (int j = 0; j < num.length; j++) {
+                    if (num[j] == -1) {
+                        temp[j] = combo[l];
+                        l++;
+                    }
+                }
+                if (!index2.contains(biToDec(temp))) {
+                    index2.add(biToDec(temp));
+                    value2.add(value.get(i));
+                } else
+                    value2.set(index2.indexOf(biToDec(temp)), value.get(i));
+            }
+        }
+
+        for (String s : value2) {
+            total += Long.parseLong(s);
+        }
+
+        //part 1
+//        for (String s : input) {
+//            if (s.startsWith("mask")) {
+//                bitMask = s.substring(7);
+//            } else if (s.startsWith("mem")) {
+//                num = decToBi(Long.parseLong(s.substring(s.indexOf("=") + 2)));
+//                if (!index.contains(s.substring(4, s.indexOf("]")))) {
+//                    index.add(s.substring(4, s.indexOf("]")));
+//                    value.add(substitute(bitMask, num));
+//                } else
+//                    value.set(index.indexOf(s.substring(4, s.indexOf("]"))), substitute(bitMask, num));
+//            }
+//        }
+//        for (long[] l : value) {
+//            total += biToDec(l);
+//        }
+//        System.out.println(Arrays.toString(value.get(0)));
+//        System.out.println(value.size());
+        return total;
+    }
+
+    public static int[][] floating(int k) {
+        int[][] combos = new int[(int) Math.pow(2, k)][k];
+        int[] buff;
+        int l;
+        for (int i = 0; i < (int) Math.pow(2, k); i++) {
+            buff = decToBi(i);
+            l = 0;
+            for (int j = 36 - k; j < buff.length; j++) {
+                combos[i][l] = buff[j];
+                l++;
+            }
+        }
+
+        return combos;
+    } // day 14
+
+    public static int[] substitute(String mask, int[] num) {
+        for (int i = 0; i < mask.length(); i++) {
+            if (mask.charAt(i) == '1')
+                num[i] = 1;
+            else if (mask.charAt(i) == 'X')
+                num[i] = -1;
+            //part 1
+//            if (mask.charAt(i) != 'X')
+//                num[i] = Long.parseLong(String.valueOf(mask.charAt(i)));
+        }
+        return num;
+    } // day 14
+
+    public static int[] decToBi(int i) {
+        int[] num = new int[36];
+        int index = num.length - 1;
+        while (index > 0) {
+            num[index] = (i % 2);
+            i /= 2;
+            index--;
+        }
+        return num;
+    } // day 14
+
+    public static long biToDec(int[] num) {
+        long decNum = 0, powerOfTwo = 1;
+
+        for (int i = num.length - 1; i >= 0; i--) {
+            decNum += (num[i] * powerOfTwo);
+            powerOfTwo *= 2;
+        }
+
+        return decNum;
+    } // day 14
 
     public static long pulverizer(long num1, long num2) {
         long quotient, buff;
