@@ -1,5 +1,4 @@
 import java.io.*;
-import java.time.Clock;
 import java.util.*;
 
 public class AdventOfCode {
@@ -18,6 +17,7 @@ public class AdventOfCode {
     private static final File twelve = new File("dayTwelve.txt");
     private static final File thirteen = new File("dayThirteen.txt");
     private static final File fourteen = new File("dayFourteen.txt");
+    private static final File fifteen = new File("dayFifteen.txt");
 
     public static void main(String[] args) throws IOException {
         final long start = System.currentTimeMillis();
@@ -34,7 +34,8 @@ public class AdventOfCode {
 //        System.out.println(dayEleven());
 //        System.out.println(dayTwelve());
 //        System.out.println(dayThirteen());
-        System.out.println(dayFourteen());
+//        System.out.println(dayFourteen());
+        System.out.println(dayFifteen());
         final long stop = System.currentTimeMillis();
         System.out.println("time: " + (stop - start));
     }
@@ -756,6 +757,48 @@ public class AdventOfCode {
 //        System.out.println(Arrays.toString(value.get(0)));
 //        System.out.println(value.size());
         return total;
+    }
+
+    public static long dayFifteen() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(fifteen));
+//        ArrayList<Integer> numbers = new ArrayList<>();
+        String[] buff = reader.readLine().split(",");
+//        for (String s : buff) numbers.add(Integer.parseInt(s));
+        int current = 0;
+        LinkedHashMap<Integer, Integer> numbers = new LinkedHashMap<>();
+
+        for (int i = 0; i < buff.length - 1; i++) {
+            numbers.put(Integer.parseInt(buff[i]), i);
+        }
+        current = Integer.parseInt(buff[buff.length - 1]);
+        for (int i = buff.length-1; i < (30000000-1); i++) {
+            if (numbers.get(current) == null) {
+                numbers.put(current, i);
+                current = 0;
+            } else {
+                int temp = current;
+                current = i - numbers.get(current);
+                numbers.put(temp, i);
+            }
+
+        }
+        // part 1
+//        for (int i = buff.length; i < 30000000; i++) {
+//            current = numbers.get(numbers.size() - 1);
+//            if (occurrence(numbers, current) == -1)
+//                numbers.add(0);
+//            else
+//                numbers.add(i - occurrence(numbers, current) - 1);
+//        }
+        return current;
+    }
+
+    public static int occurrence(ArrayList<Integer> list, int num) {
+        for (int i = list.size() - 2; i >= 0; i--) {
+            if (list.get(i) == num)
+                return i;
+        }
+        return -1;
     }
 
     public static int[][] floating(int k) {
