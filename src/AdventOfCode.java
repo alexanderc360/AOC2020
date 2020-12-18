@@ -18,6 +18,8 @@ public class AdventOfCode {
     private static final File thirteen = new File("dayThirteen.txt");
     private static final File fourteen = new File("dayFourteen.txt");
     private static final File fifteen = new File("dayFifteen.txt");
+    private static final File sixteen = new File("daySixteen.txt");
+    private static final File seventeen = new File("daySeventeen.txt");
 
     public static void main(String[] args) throws IOException {
         final long start = System.currentTimeMillis();
@@ -35,7 +37,9 @@ public class AdventOfCode {
 //        System.out.println(dayTwelve());
 //        System.out.println(dayThirteen());
 //        System.out.println(dayFourteen());
-        System.out.println(dayFifteen());
+//        System.out.println(dayFifteen());
+//        System.out.println(daySixteen());
+        System.out.println(daySeventeen());
         final long stop = System.currentTimeMillis();
         System.out.println("time: " + (stop - start));
     }
@@ -771,7 +775,7 @@ public class AdventOfCode {
             numbers.put(Integer.parseInt(buff[i]), i);
         }
         current = Integer.parseInt(buff[buff.length - 1]);
-        for (int i = buff.length-1; i < (30000000-1); i++) {
+        for (int i = buff.length - 1; i < (30000000 - 1); i++) {
             if (numbers.get(current) == null) {
                 numbers.put(current, i);
                 current = 0;
@@ -793,13 +797,211 @@ public class AdventOfCode {
         return current;
     }
 
+    public static long daySixteen() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(sixteen));
+        String buff;
+        ArrayList<String[]> tickets = new ArrayList<>();
+        ArrayList<String> conditions = new ArrayList<>();
+        HashMap<Integer, String> conditionOrder = new HashMap<>();
+
+        while (!(buff = reader.readLine()).isEmpty()) {
+            conditions.add(buff);
+        }
+        buff = reader.readLine();
+        String myTicket = "";
+        while (!(buff = reader.readLine()).isEmpty()) {
+            myTicket = buff;
+        }
+        buff = reader.readLine();
+        while ((buff = reader.readLine()) != null) {
+            tickets.add(buff.split(","));
+        }
+        int total = 0;
+
+        for (int i = 0; i < tickets.size(); i++) {
+            if (validTicket(tickets.get(i), conditions) != -1) {
+                tickets.remove(tickets.get(i));
+            }
+        }
+
+        int[][] ticketValues = new int[tickets.size()][tickets.get(0).length];
+        int[][] conditionValues = new int[conditions.size()][4];
+        for (int i = 0; i < tickets.size(); i++) {
+            for (int j = 0; j < tickets.get(i).length; j++) {
+                ticketValues[i][j] = Integer.parseInt(tickets.get(i)[j]);
+            }
+        }
+
+
+        String s;
+        int or;
+        for (int i = 0; i < conditions.size(); i++) {
+            s = conditions.get(i).substring(conditions.get(i).indexOf(':') + 2);
+            or = s.indexOf('-', s.indexOf("or") + 3);
+            conditionValues[i][0] = Integer.parseInt(s.substring(0, s.indexOf('-')));
+            conditionValues[i][1] = Integer.parseInt(s.substring(s.indexOf('-') + 1, s.indexOf("or") - 1));
+            conditionValues[i][2] = Integer.parseInt(s.substring(s.indexOf("or") + 3, or));
+            conditionValues[i][3] = Integer.parseInt(s.substring(or + 1));
+        }
+
+
+//        for (int i = 0; i < conditionValues.length; i++) {
+//            for (int j = 0; j < conditionValues[0].length; j++)
+//                System.out.print(conditionValues[i][j] + " ");
+//            System.out.println();
+//        }
+//        for (int i = 0; i < ticketValues.length; i++) {
+//            for (int j = 0; j < ticketValues[0].length; j++)
+//                System.out.print(ticketValues[i][j] + " ");
+//            System.out.println();
+//        }
+
+        int position = 0;
+//        for (int i = 0; i < conditions.size(); i++) {
+//        position = conditionChecker(ticketValues, conditionValues);
+//            if (position != -1) {
+//
+//            }
+//        }
+        conditionChecker(ticketValues, conditionValues);
+
+        //part 1
+//        for (String ticket : tickets) {
+//            int num = validTicket(ticket, conditions);
+//            if (num != -1) {
+//                total += num;
+//            }
+//        }
+        return total;
+    }
+
+    public static long daySeventeen() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(seventeen));
+        String buff;
+        HashSet<Coordinate4D> active = new HashSet<>();
+        int y = -1;
+        while ((buff = reader.readLine()) != null) {
+            y++;
+            for (int i = 0; i < buff.length(); i++)
+                if (buff.charAt(i) == '#')
+                    active.add(new Coordinate4D(i, y, 0, 0));
+        }
+        for (int i = 0; i < 6; i++)
+            active = gridChange(active);
+        return active.size();
+    }
+
+    public static HashSet<Coordinate4D> gridChange(HashSet<Coordinate4D> active) {
+        HashSet<Coordinate4D> newActive = new HashSet<>();
+
+        for (Coordinate4D c : active) {
+            if ((isActive(active, c.getX(), c.getY(), c.getZ(), c.getW()) == 3 || isActive(active, c.getX(), c.getY(), c.getZ(), c.getW()) == 2)) {
+                newActive.add(c);
+            }
+            for (int i = c.getX() - 1; i <= c.getX() + 1; i++)
+                for (int j = c.getY() - 1; j <= c.getY() + 1; j++)
+                    for (int k = c.getZ() - 1; k <= c.getZ() + 1; k++)
+                        for (int l = c.getW() - 1; l <= c.getW() + 1; l++)
+                            if (!active.contains(new Coordinate4D(i, j, k, l)) && isActive(active, i, j, k, l) == 3)
+                                newActive.add(new Coordinate4D(i, j, k, l));
+        }
+
+        return newActive;
+    }
+
+    public static int isActive(HashSet<Coordinate4D> active, int x, int y, int z, int w) {
+        int filled = 0;
+        for (int i = x - 1; i <= x + 1; i++) {
+            for (int j = y - 1; j <= y + 1; j++) {
+                for (int k = z - 1; k <= z + 1; k++) {
+                    for (int l = w - 1; l <= w + 1; l++) {
+                        if (active.contains(new Coordinate4D(i, j, k, l)))
+                            filled++;
+                    }
+                }
+            }
+        }
+
+        if (active.contains(new Coordinate4D(x, y, z, w)))
+            filled--;
+        return filled;
+    }
+
+    public static HashMap<Integer, Integer> conditionChecker(int[][] tickets, int[][] conditions) {
+        boolean valid = true;
+        int count = 0, placement = -1, conPlace = 0;
+        HashMap<Integer, Integer> place = new HashMap<>();
+        for (int k = 0; k < tickets[0].length; k++) {
+            count = 0;
+            for (int i = 0; i < conditions.length; i++) {
+                valid = true;
+                for (int[] ticket : tickets) {
+                    System.out.println(ticket[k] + " " + Arrays.toString(conditions[i]));
+                    if (!((ticket[k] >= conditions[i][0] && ticket[k] <= conditions[i][1])
+                            || (ticket[k] >= conditions[i][2] && ticket[k] <= conditions[i][3]))) {
+                        valid = false;
+                        System.out.println("wrong: " + i);
+                        count = 0;
+                        break;
+                    }
+                }
+                if (valid)
+                    count++;
+                if (count == 1) {
+                    System.out.println("add: " + i);
+                    placement = k;
+                    conPlace = i;
+                }
+                System.out.println("end: " + count);
+
+                if (count == 1) {
+                    System.out.println("test: " + placement + " " + conPlace);
+                    Arrays.fill(conditions[conPlace], -1);
+                    assert false;
+                    place.put(placement, conPlace);
+                }
+            }
+//            System.out.println(count);
+        }
+        System.out.println(place);
+        return place;
+    }
+
+    public static int validTicket(String[] ticket, ArrayList<String> conditions) {
+//        System.out.println(conditions);
+//        System.out.println();
+        int currentNum, numOne, numTwo, numThree, numFour;
+        boolean valid = false;
+        String c;
+        for (String value : ticket) {
+            currentNum = Integer.parseInt(value);
+            for (String condition : conditions) {
+//                System.out.println(condition);
+                c = condition;
+                c = c.substring(c.indexOf(":") + 2);
+                int or = c.indexOf('-', c.indexOf("or") + 3);
+                numOne = Integer.parseInt(c.substring(0, c.indexOf('-')));
+                numTwo = Integer.parseInt(c.substring(c.indexOf('-') + 1, c.indexOf("or") - 1));
+                numThree = Integer.parseInt(c.substring(c.indexOf("or") + 3, or));
+                numFour = Integer.parseInt(c.substring(or + 1));
+
+                valid = (currentNum >= numOne && currentNum <= numTwo) || (currentNum >= numThree && currentNum <= numFour);
+                if (valid)
+                    break;
+            }
+            if (!valid)
+                return currentNum;
+        }
+        return -1;
+    }
+
     public static int occurrence(ArrayList<Integer> list, int num) {
         for (int i = list.size() - 2; i >= 0; i--) {
             if (list.get(i) == num)
                 return i;
         }
         return -1;
-    }
+    } // day 15
 
     public static int[][] floating(int k) {
         int[][] combos = new int[(int) Math.pow(2, k)][k];
