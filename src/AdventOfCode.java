@@ -20,6 +20,7 @@ public class AdventOfCode {
     private static final File fifteen = new File("dayFifteen.txt");
     private static final File sixteen = new File("daySixteen.txt");
     private static final File seventeen = new File("daySeventeen.txt");
+    private static final File eighteen = new File("dayEighteen.txt");
 
     public static void main(String[] args) throws IOException {
         final long start = System.currentTimeMillis();
@@ -39,7 +40,8 @@ public class AdventOfCode {
 //        System.out.println(dayFourteen());
 //        System.out.println(dayFifteen());
 //        System.out.println(daySixteen());
-        System.out.println(daySeventeen());
+//        System.out.println(daySeventeen());
+        System.out.println(dayEighteen());
         final long stop = System.currentTimeMillis();
         System.out.println("time: " + (stop - start));
     }
@@ -875,7 +877,7 @@ public class AdventOfCode {
         return total;
     }
 
-    public static long daySeventeen() throws IOException {
+    public static int daySeventeen() throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(seventeen));
         String buff;
         HashSet<Coordinate4D> active = new HashSet<>();
@@ -890,6 +892,79 @@ public class AdventOfCode {
             active = gridChange(active);
         return active.size();
     }
+
+    public static long dayEighteen() throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(eighteen));
+        String buff;
+        ArrayList<String> expressions = new ArrayList<>();
+        while ((buff = reader.readLine()) != null) {
+            expressions.add(buff);
+        }
+        long total = 0;
+        for (String expression : expressions) total += math(infixToPostfix(expression));
+        return total;
+    }
+
+    public static long math(ArrayList<Character> postfix) {
+        Stack<Long> stack = new Stack<>();
+        long num1, num2;
+        for (char c : postfix) {
+            if (Character.isDigit(c))
+                stack.push((long) (c - 48));
+            else {
+                num1 = stack.pop();
+                num2 = stack.pop();
+
+                if (c == '+')
+                    stack.push(num1 + num2);
+                else if (c == '*')
+                    stack.push(num1 * num2);
+            }
+        }
+        return stack.pop();
+    } // day 18
+
+    public static ArrayList<Character> infixToPostfix(String infix) {
+        infix = infix.replaceAll("\\s", "");
+        ArrayList<Character> result = new ArrayList<>();
+        Stack<Character> stack = new Stack<>();
+
+        for (int i = 0; i < infix.length(); ++i) {
+            char c = infix.charAt(i);
+            if (Character.isDigit(c))
+                result.add(c);
+            else if (c == '(')
+                stack.push(c);
+            else if (c == ')') {
+                while (!stack.isEmpty() && stack.peek() != '(')
+                    result.add(stack.pop());
+                stack.pop();
+            } else
+            {
+                while (!stack.isEmpty() && precedent(c) <= precedent(stack.peek())) {
+                    result.add(stack.pop());
+                }
+                stack.push(c);
+            }
+        }
+
+        while (!stack.isEmpty()) {
+            if (stack.peek() == '(')
+                System.out.println("invalid");
+            result.add(stack.pop());
+        }
+        return result;
+    } // day 18
+
+    public static int precedent(char c) {
+        switch (c) {
+            case '+':
+                return 2;
+            case '*':
+                return 1;
+        }
+        return -1;
+    } // day 18
 
     public static HashSet<Coordinate4D> gridChange(HashSet<Coordinate4D> active) {
         HashSet<Coordinate4D> newActive = new HashSet<>();
@@ -907,7 +982,7 @@ public class AdventOfCode {
         }
 
         return newActive;
-    }
+    } // day 17
 
     public static int isActive(HashSet<Coordinate4D> active, int x, int y, int z, int w) {
         int filled = 0;
@@ -925,7 +1000,7 @@ public class AdventOfCode {
         if (active.contains(new Coordinate4D(x, y, z, w)))
             filled--;
         return filled;
-    }
+    } // day 17
 
     public static HashMap<Integer, Integer> conditionChecker(int[][] tickets, int[][] conditions) {
         boolean valid = true;
@@ -965,7 +1040,7 @@ public class AdventOfCode {
         }
         System.out.println(place);
         return place;
-    }
+    } // day 16
 
     public static int validTicket(String[] ticket, ArrayList<String> conditions) {
 //        System.out.println(conditions);
@@ -993,7 +1068,7 @@ public class AdventOfCode {
                 return currentNum;
         }
         return -1;
-    }
+    } // day 16
 
     public static int occurrence(ArrayList<Integer> list, int num) {
         for (int i = list.size() - 2; i >= 0; i--) {
